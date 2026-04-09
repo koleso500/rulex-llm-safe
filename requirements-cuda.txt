@@ -1,0 +1,13 @@
+matplotlib==3.10.8
+numpy==2.4.1
+opencv-python==4.13.0.90
+pandas==3.0.0
+pennylane==0.44.0
+PyYAML==6.0.3
+scikit-learn==1.8.0
+
+# PyTorch with CUDA 11.8 support
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch==2.7.1+cu118
+torchaudio==2.7.1+cu118
+torchvision==0.22.1+cu118
