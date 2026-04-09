@@ -1,0 +1,200 @@
+global:
+  seed: 42
+  n_splits: 5
+
+paths:
+  csv_dir: 'results/csv'
+  fig_text_dir: 'results/figures/text'
+  fig_hmda_dir: 'results/figures/hmda'
+  fig_image_dir: 'results/figures/image'
+
+text:
+  seed: 42
+  n_splits: 5
+
+  dataset:
+    hf_name: 'takala/financial_phrasebank'
+    hf_subset: 'sentences_allagree'
+    text_column: 'sentence'
+    label_column: 'label'
+    expected_labels: [0, 1, 2]
+    class_order: [0, 1, 2]
+    fold_export_prefix: 'phrasebank'
+    label_map:
+      negative: 0
+      neutral: 1
+      positive: 2
+
+  vectorizer:
+    optuna:
+      type: 'tfidf'
+      lowercase: true
+      ngram_range: [1, 2]
+      max_features: 2000
+      min_df: 2
+    training:
+      type: 'count'
+      binary: true
+      lowercase: true
+      max_features: 2000
+      min_df: 5
+
+  optuna:
+    trials: 30
+    cv_folds: 3
+    metric: 'f1_macro'
+    tuned_models: ['logistic_regression', 'random_forest', 'svm', 'xgboost']
+    files:
+      best_params_json: 'optuna_best_params_text.json'
+      best_params_csv: 'optuna_best_params_summary_text.csv'
+
+  training:
+    epochs: 20
+    batch_size: 64
+    learning_rate: 0.003
+    device: 'auto'
+
+  safe:
+    n_segments: 10
+    fig_size: [8, 6]
+    verbose: true
+    rgr:
+      noise_start: 0.0
+      noise_end: 3.0
+      noise_step: 0.3
+    rge:
+      removal_start: 0.0
+      removal_end: 1.0
+      removal_step: 0.1
+      masking_method: 'random'
+      baseline: 'mean'
+
+  models:
+    model_names: ['Linear', 'RF', 'SVM', 'XGB', 'VEM', 'SEM', 'MLP']
+
+  ensembles:
+    voting:
+      estimators: ['random_forest', 'xgboost']
+      voting: 'soft'
+    stacking:
+      estimators: ['random_forest', 'xgboost']
+      final_estimator:
+        C: 1.0
+        max_iter: 2000
+        solver: 'lbfgs'
+
+hmda:
+  seed: 42
+  n_splits: 5
+
+  dataset:
+    raw_csv: 'C:/Users/koles/Desktop/safe-ai-metrics-integrated/data/raw/hmda_2017_ny_all-records_labels.csv'
+    target: 'action_taken'
+    create_sample: true
+    sample_fraction: 0.1
+    sample_size: null
+    fold_export_prefix: 'hmda'
+
+  optuna:
+    trials: 20
+    cv_folds: 3
+    metric: 'f1_macro'
+    tuned_models: ['logistic_regression', 'random_forest', 'svm', 'xgboost']
+    files:
+      best_params_json: 'optuna_best_params_hmda.json'
+      best_params_csv: 'optuna_best_params_summary_hmda.csv'
+
+  training:
+    epochs: 20
+    batch_size: 64
+    learning_rate: 0.003
+    device: 'auto'
+
+  safe:
+    n_segments: 10
+    fig_size: [8, 6]
+    verbose: true
+    rgr:
+      noise_start: 0.0
+      noise_end: 1.0
+      noise_step: 0.1
+    rge:
+      n_steps: null
+      masking_method: 'greedy'
+      baseline: 'mean'
+
+  models:
+    model_names: ['Linear', 'RF', 'SVM', 'XGB', 'VEM', 'SEM', 'MLP']
+
+  ensembles:
+    voting:
+      estimators: ['random_forest', 'xgboost']
+      voting: 'soft'
+    stacking:
+      estimators: ['random_forest', 'xgboost']
+      final_estimator:
+        C: 1.0
+        max_iter: 2000
+        solver: 'lbfgs'
+
+image:
+  seed: 42
+  n_splits: 5
+
+  dataset:
+    data_dir: 'C:\Users\koles\Desktop\icml_1\data\Brain_Cancer'
+    img_size: 224
+    batch_size_images: 64
+    fold_export_prefix: 'brain'
+
+  optuna:
+    trials: 30
+    cv_folds: 3
+    metric: 'f1_macro'
+    tuned_models: ['logistic_regression', 'random_forest', 'svm', 'xgboost']
+    files:
+      best_params_json: 'optuna_best_params_brain.json'
+      best_params_csv: 'optuna_best_params_brain_summary.csv'
+
+  training:
+    epochs: 20
+    batch_size: 32
+    learning_rate: 0.003
+    device: 'auto'
+
+  safe:
+    batch_size_safe: 64
+    n_segments: 10
+    fig_size: [8, 6]
+    verbose: true
+    rgr:
+      noise_start: 0.0
+      noise_end: 3.0
+      noise_step: 0.3
+    rge:
+      removal_start: 0.0
+      removal_end: 1.0
+      removal_step: 0.1
+      patch_size: 32
+      occlusion_method: 'gradcam_most'
+
+  gradcam:
+    epochs: 10
+    learning_rate: 0.001
+    batch_size: 64
+
+  models:
+    model_names: ['Linear', 'RF', 'SVM', 'XGB', 'VEM', 'SEM', 'MLP']
+
+  ensembles:
+    voting:
+      estimators: ['random_forest', 'xgboost']
+      voting: 'soft'
+    stacking:
+      estimators: ['random_forest', 'xgboost']
+      final_estimator:
+        C: 1.0
+        max_iter: 2000
+        solver: 'lbfgs'
+
+
